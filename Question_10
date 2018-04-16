@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#define WAIT 1
+int main ()
+{
+	
+    char            name[20] = {0};
+    fd_set          input_set;
+    struct timeval  timeout;
+    int             ready_for_reading = 0;
+    int             read_bytes = 0;
+    FD_ZERO(&input_set );
+    FD_SET(0, &input_set);
+    timeout.tv_sec = WAIT;  
+    timeout.tv_usec = 0;   
+    printf("Enter input: (in %d seconds)\n", WAIT);
+    printf("Time start now!!!\n");
+    ready_for_reading = select(1, &input_set, NULL, NULL, &timeout);
+    if (ready_for_reading == -1) {
+        printf("Unable to read your input\n");
+        return -1;
+    } 
+    if (ready_for_reading) 
+    {
+        read_bytes = read(0, name, 19);
+	
+        if(name[read_bytes-1]=='\n')
+	{
+         	--read_bytes;
+        	name[read_bytes]='\0';
+        }
+        if(read_bytes==0)
+	{
+            printf("You just hit enter\n");
+        } 
+	else
+	{   
+	    printf("It is active process \n");
+            printf("Read, %d bytes from input are : %s \n", read_bytes, name);
+        }
+    } 
+    else
+    {
+        printf(" %d one Second is over - no data input \n", WAIT);
+	printf(" non interactive process\n");
+printf("process is added to lower priority queue\n");
+    }
+
+    return 0;
+}
